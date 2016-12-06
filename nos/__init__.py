@@ -1,13 +1,13 @@
 # -*- coding:utf8 -*-
 
 from __future__ import absolute_import
-
-from .client import Client
-
 import sys
+from .client import Client
+from .client.utils import VERSION
+
 
 __all__ = ["Client", "transport", "serializer", "connection", "exceptions"]
-__version__ = "1.0.0"
+__version__ = VERSION
 
 
 if (2, 7) <= sys.version_info < (3, 2):

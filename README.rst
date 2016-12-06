@@ -57,6 +57,7 @@ nos.Client对象实例化
     * num_pools(integer) -- HTTP连接池的大小。默认值为：16。
     * timeout(integer) -- 连接超时的时间，单位：秒。
     * max_retries(integer) -- 当得到HTTP 5XX的服务器错误的响应时，进行重试的次数。默认值为：2。
+    * enable_ssl(boolean) -- 与NOS服务器进行数据传输、交互时，是否使用HTTPS。默认值为：False，默认使用HTTP。
 
 nos.Client可能引发的所有异常类型
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

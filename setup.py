@@ -6,8 +6,8 @@ import sys
 import re
 
 version = ""
-with open("nos/__init__.py", "r") as fd:
-    version = re.search(r"^__version__\s*=\s*[\"']([^\"']*)[\"']", fd.read(),
+with open("nos/client/utils.py", "r") as fd:
+    version = re.search(r"^VERSION\s*=\s*[\"']([^\"']*)[\"']", fd.read(),
                         re.MULTILINE).group(1)
 
 long_description = ""
@@ -16,6 +16,7 @@ with open(join(dirname(__file__), "README.rst")) as fd:
 
 install_requires = [
     "urllib3>=1.8, <2.0",
+    "certifi",
 ]
 tests_require = [
     "nose",

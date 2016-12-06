@@ -23,7 +23,8 @@ class Transport(object):
                  connection_class=Urllib3HttpConnection,
                  serializer=JSONSerializer(), end_point='nos-eastchina1.126.net',
                  max_retries=2, retry_on_status=(500, 501, 503, ),
-                 retry_on_timeout=False, timeout=None, **kwargs):
+                 retry_on_timeout=False, timeout=None, enable_ssl=False,
+                 **kwargs):
         self.access_key_id = access_key_id
         self.access_key_secret = access_key_secret
         self.max_retries = max_retries
@@ -31,10 +32,12 @@ class Transport(object):
         self.retry_on_status = retry_on_status
         self.timeout = timeout
         self.end_point = end_point
+        self.enable_ssl = enable_ssl
 
         # data serializer
         self.serializer = serializer
         # store all strategies...
+        kwargs.setdefault('enable_ssl', self.enable_ssl)
         self.connection = connection_class(**kwargs)
 
     def perform_request(self, method, bucket=None, key=None, params={},
@@ -83,7 +86,8 @@ class Transport(object):
             key=key,
             params=params,
             body=body,
-            headers=headers
+            headers=headers,
+            enable_ssl=self.enable_ssl
         )
         url = meta_data.get_url()
         headers = meta_data.get_headers()

@@ -19,7 +19,7 @@ class TestTransport(TestCase):
         self.assertEquals(None, transport.access_key_secret)
         self.assertEquals(2, transport.max_retries)
         self.assertEquals(False, transport.retry_on_timeout)
-        self.assertEquals('nos.netease.com', transport.end_point)
+        self.assertEquals('nos-eastchina1.126.net', transport.end_point)
         self.assertEquals((500, 501, 503, ), transport.retry_on_status)
         self.assertEquals(None, transport.timeout)
         self.assertIsInstance(transport.serializer, JSONSerializer)
@@ -72,10 +72,11 @@ class TestTransport(TestCase):
             method='GET',
             bucket=None,
             key=None,
-            end_point='nos.netease.com',
+            end_point='nos-eastchina1.126.net',
             params={},
             body=None,
-            headers={}
+            headers={},
+            enable_ssl=False
         )
         transport.connection.perform_request.assert_called_once_with(
             'GET', url, None, headers, timeout=None
@@ -146,7 +147,7 @@ class TestTransport(TestCase):
 
     def test_perform_request_with_fileopenmodeerror(self):
         transport = Transport()
-        f = open('/etc/passwd', 'r')
+        f = open('setup.py', 'r')
         transport.serializer.dumps = Mock(return_value=f)
         self.assertRaises(
             FileOpenModeError, transport.perform_request, 'GET', body=f
