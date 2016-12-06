@@ -1,5 +1,7 @@
 # -*- coding:utf8 -*-
 
+import platform
+
 
 def enum(**enums):
     return type('Enum', (), enums)
@@ -23,6 +25,7 @@ HTTP_HEADER = enum(
     ETAG='ETag',
     DATE='Date',
     EXPIRES='Expires',
+    USER_AGENT='User-Agent',
     X_NOS_REQUEST_ID='x-nos-request-id',
     X_NOS_COPY_SOURCE='x-nos-copy-source',
     X_NOS_MOVE_SOURCE='x-nos-move-source',
@@ -55,8 +58,10 @@ SUB_RESOURCE = set([
     'resize',
 ])
 
+VERSION = '1.0.1'
 CHUNK_SIZE = 65536
 MAX_OBJECT_SIZE = 100 * 1024 * 1024
 TIME_CST_FORMAT = '%a, %d %b %Y %H:%M:%S Asia/Shanghai'
 METADATA_PREFIX = 'x-nos-meta-'
 NOS_HEADER_PREFIX = 'x-nos-'
+USER_AGENT = 'nos-python-sdk/%s python%s %s' % (VERSION, platform.python_version(), ' '.join(platform.uname()))

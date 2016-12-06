@@ -1,5 +1,6 @@
 # -*- coding:utf8 -*-
 
+import certifi
 import urllib3
 from urllib3.exceptions import ReadTimeoutError
 from .exceptions import (ConnectionError, ConnectionTimeout,
@@ -10,8 +11,13 @@ __all__ = ["Urllib3HttpConnection"]
 
 
 class Urllib3HttpConnection(object):
-    def __init__(self, num_pools=16, **kwargs):
-        self.pool = urllib3.PoolManager(num_pools=num_pools)
+    def __init__(self, num_pools=16, enable_ssl=False, **kwargs):
+        if enable_ssl:
+            self.pool = urllib3.PoolManager(num_pools=num_pools,
+                                            cert_reqs='CERT_REQUIRED',
+                                            ca_certs=certifi.where())
+        else:
+            self.pool = urllib3.PoolManager(num_pools=num_pools)
 
     def perform_request(self, method, url, body=None, headers={}, timeout=None,
                         preload_content=False):

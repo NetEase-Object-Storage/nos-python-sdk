@@ -7,7 +7,7 @@ import time
 import urllib2
 import copy
 from .utils import (HTTP_HEADER, NOS_HEADER_PREFIX, TIME_CST_FORMAT,
-                    CHUNK_SIZE, SUB_RESOURCE)
+                    CHUNK_SIZE, SUB_RESOURCE, USER_AGENT)
 
 
 class RequestMetaData(object):
@@ -16,7 +16,7 @@ class RequestMetaData(object):
     """
     def __init__(self, access_key_id, access_key_secret, method,
                  bucket=None, key=None, end_point='nos.netease.com',
-                 params={}, body=None, headers={}):
+                 params={}, body=None, headers={}, enable_ssl=False):
         self.access_key_id = access_key_id
         self.access_key_secret = access_key_secret
         self.method = method
@@ -25,6 +25,7 @@ class RequestMetaData(object):
         self.end_point = end_point
         self.params = params
         self.headers = copy.deepcopy(headers)
+        self.enable_ssl = enable_ssl
         self.body = body
         self.url = ''
 
@@ -42,6 +43,9 @@ class RequestMetaData(object):
         self.headers[HTTP_HEADER.DATE] = time.strftime(
             TIME_CST_FORMAT, time.gmtime(time.time() + 8 * 3600)
         )
+
+        # init user-agent header
+        self.headers.setdefault(HTTP_HEADER.USER_AGENT, USER_AGENT)
 
         # init content-md5 header
         if self.body is not None:
@@ -78,10 +82,12 @@ class RequestMetaData(object):
         build the url with query string
         :return: url with query string
         """
+        self.url = "https://" if self.enable_ssl else "http://"
+
         if self.bucket is None:
-            self.url = 'http://%s/' % self.end_point
+            self.url += '%s/' % self.end_point
         else:
-            self.url = 'http://%s.%s/' % (self.bucket, self.end_point)
+            self.url += '%s.%s/' % (self.bucket, self.end_point)
 
         if self.key is not None:
             self.url += urllib2.quote(self.key.strip('/'), '*')
@@ -105,7 +111,7 @@ class RequestMetaData(object):
         @rtype: string
         @return: canonical string for netease storage service
         """
-        headers = dict([(k.lower(), str(v).strip())
+        headers = dict([(k.lower(), str(v).strip().strip("'\""))
                         for k, v in self.headers.iteritems()])
 
         meta_headers = dict([(k, v) for k, v in headers.iteritems()

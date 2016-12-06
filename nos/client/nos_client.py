@@ -93,6 +93,8 @@ class Client(object):
             :opt_arg timeout(integer): Timeout while connecting to server.
             :opt_arg max_retries(integer): The count of retry when get http 5XX.
               `2` is set by default.
+            :opt_arg enable_ssl(boolean): Use https while connecting to server.
+              False is set by default, so default use http.
         """
         self.transport = transport_class(
             access_key_id=access_key_id,
@@ -112,7 +114,7 @@ class Client(object):
         :raise ClientException: If any errors are occured in the client point.
         :raise ServiceException: If any errors occurred in NOS server point.
         """
-        status, headers, body = self.transport.perform_request(
+        _, headers, _ = self.transport.perform_request(
             HTTP_METHOD.DELETE, bucket, key
         )
         return {
@@ -186,7 +188,7 @@ class Client(object):
         if 'range' in kwargs:
             headers[HTTP_HEADER.RANGE] = kwargs['range']
 
-        status, headers, body = self.transport.perform_request(
+        _, headers, body = self.transport.perform_request(
             HTTP_METHOD.GET, bucket, key, headers=headers
         )
         return {
@@ -200,7 +202,7 @@ class Client(object):
                 HTTP_HEADER.CONTENT_RANGE, ''
             ),
             RETURN_KEY.CONTENT_TYPE: headers.get(HTTP_HEADER.CONTENT_TYPE, ''),
-            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, ''),
+            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '').strip("'\""),
             RETURN_KEY.BODY: body
         }
 
@@ -222,7 +224,7 @@ class Client(object):
         :raise ClientException: If any errors are occured in the client point.
         :raise ServiceException: If any errors occurred in NOS server point.
         """
-        status, headers, body = self.transport.perform_request(
+        _, headers, _ = self.transport.perform_request(
             HTTP_METHOD.HEAD, bucket, key
         )
         return {
@@ -236,7 +238,7 @@ class Client(object):
                 HTTP_HEADER.LAST_MODIFIED, ''
             ),
             RETURN_KEY.CONTENT_TYPE: headers.get(HTTP_HEADER.CONTENT_TYPE, ''),
-            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '')
+            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '').strip("'\"")
         }
 
     def list_objects(self, bucket, **kwargs):
@@ -315,14 +317,14 @@ class Client(object):
         for k, v in kwargs.get('meta_data', {}).iteritems():
             headers[k] = v
 
-        status, headers, body = self.transport.perform_request(
+        _, headers, body = self.transport.perform_request(
             HTTP_METHOD.PUT, bucket, key, body=body, headers=headers
         )
         return {
             RETURN_KEY.X_NOS_REQUEST_ID: headers.get(
                 HTTP_HEADER.X_NOS_REQUEST_ID, ''
             ),
-            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '')
+            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '').strip("'\"")
         }
 
     def copy_object(self, src_bucket, src_key, dest_bucket, dest_key):
@@ -353,7 +355,7 @@ class Client(object):
             src_bucket, urllib2.quote(src_key.strip('/'), '*')
         )
 
-        status, headers, body = self.transport.perform_request(
+        _, headers, _ = self.transport.perform_request(
             HTTP_METHOD.PUT, dest_bucket, dest_key, headers=headers
         )
         return {
@@ -390,7 +392,7 @@ class Client(object):
             src_bucket, urllib2.quote(src_key.strip('/'), '*')
         )
 
-        status, headers, body = self.transport.perform_request(
+        _, headers, _ = self.transport.perform_request(
             HTTP_METHOD.PUT, dest_bucket, dest_key, headers=headers
         )
         return {
@@ -462,14 +464,14 @@ class Client(object):
             'partNumber': str(part_num),
             'uploadId': upload_id
         }
-        status, headers, body = self.transport.perform_request(
+        _, headers, body = self.transport.perform_request(
             HTTP_METHOD.PUT, bucket, key, body=body, params=params
         )
         return {
             RETURN_KEY.X_NOS_REQUEST_ID: headers.get(
                 HTTP_HEADER.X_NOS_REQUEST_ID, ''
             ),
-            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '')
+            RETURN_KEY.ETAG: headers.get(HTTP_HEADER.ETAG, '').strip("'\"")
         }
 
     def complete_multipart_upload(self, bucket, key, upload_id, info, **kwargs):
@@ -536,7 +538,7 @@ class Client(object):
         :raise ServiceException: If any errors occurred in NOS server point.
         """
         params = {'uploadId': upload_id}
-        status, headers, body = self.transport.perform_request(
+        _, headers, _ = self.transport.perform_request(
             HTTP_METHOD.DELETE, bucket, key, params=params
         )
         return {

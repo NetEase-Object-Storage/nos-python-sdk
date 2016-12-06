@@ -1,0 +1,10 @@
+.project
+.pydevproject
+.coverage
+.eggs/
+.settings/
+dist/
+coverage.xml
+nosetests.xml
+*.egg-info/
+*.pyc
