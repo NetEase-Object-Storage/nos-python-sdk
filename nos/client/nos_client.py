@@ -487,6 +487,9 @@ class Client(object):
         :arg kwargs: Other optional parameters.
             :opt_arg object_md5(string): MD5 of the whole object which is
               multipart uploaded.
+            :opt_arg meta_data(dict): Represents the object metadata that is
+              stored with Nos. This includes custom user-supplied metadata and
+              the key should start with 'x-nos-meta-'.
         :ret return_value(dict): The response of NOS server.
             :element x_nos_request_id(string): ID which can point out the
               request.
@@ -498,6 +501,9 @@ class Client(object):
         headers = {}
         if 'object_md5' in kwargs:
             headers[HTTP_HEADER.X_NOS_OBJECT_MD5] = kwargs['object_md5']
+
+        for k, v in kwargs.get('meta_data', {}).iteritems():
+            headers[k] = v
 
         parts_xml = []
         part_xml = '<Part><PartNumber>%s</PartNumber><ETag>%s</ETag></Part>'
