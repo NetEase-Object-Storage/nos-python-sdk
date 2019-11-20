@@ -174,7 +174,8 @@ class TestSmokeTest(TestCase):
             bucket=self.BUCKET,
             key=self.KEYS[0],
             upload_id=upload_id,
-            info=[{'part_num': x, 'etag': y} for x, y in info.iteritems()]
+            info=[{'part_num': x, 'etag': y} for x, y in info.iteritems()],
+            meta_data={'x-nos-meta-hello': 'world'}
         )
         resp = r['response']
         self.assertEquals(self.BUCKET, resp.findtext('Bucket'))
