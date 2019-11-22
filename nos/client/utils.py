@@ -58,7 +58,7 @@ SUB_RESOURCE = set([
     'resize',
 ])
 
-VERSION = '1.0.1'
+VERSION = '1.0.3'
 CHUNK_SIZE = 65536
 MAX_OBJECT_SIZE = 100 * 1024 * 1024
 TIME_CST_FORMAT = '%a, %d %b %Y %H:%M:%S Asia/Shanghai'
