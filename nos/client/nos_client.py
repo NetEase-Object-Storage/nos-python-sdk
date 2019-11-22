@@ -93,6 +93,13 @@ class Client(object):
             :opt_arg timeout(integer): Timeout while connecting to server.
             :opt_arg max_retries(integer): The count of retry when get http 5XX.
               `2` is set by default.
+            :opt_arg retry_backoff_factor(float): A backoff factor to apply
+                between attempts after the second try (most errors are resolved immediately
+                by a second try without a delay). client will sleep for::
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep for
+                [0.1s, 0.2s, 0.4s, ...] between retries. It will never be longer than `BACKOFF_MAX`.
+                By default, backoff is disabled (set to 0).
             :opt_arg enable_ssl(boolean): Use https while connecting to server.
               False is set by default, so default use http.
         """

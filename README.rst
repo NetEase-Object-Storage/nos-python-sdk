@@ -1,5 +1,5 @@
 ﻿NOS Python SDK
-==============
+============================
 
 NOS Python SDK实现了NOS对象操作接口，基于此SDK能方便快速地实现Python应用程序来使用NOS的对象存储服务。
 
@@ -57,6 +57,7 @@ nos.Client对象实例化
     * num_pools(integer) -- HTTP连接池的大小。默认值为：16。
     * timeout(integer) -- 连接超时的时间，单位：秒。
     * max_retries(integer) -- 当得到HTTP 5XX的服务器错误的响应时，进行重试的次数。默认值为：2。
+    * retry_backoff_factor(float) -- 重试指数退避因子，多次重试之间的时间间隔为：retry_backoff_factor * (2** 已重试次数) 秒。例如，当设置为0.1时，重试的时间间隔为[0.1s, 0.2s, 0.4s, ...]。默认值为: 0.0。
     * enable_ssl(boolean) -- 与NOS服务器进行数据传输、交互时，是否使用HTTPS。默认值为：False，默认使用HTTP。
 
 nos.Client可能引发的所有异常类型

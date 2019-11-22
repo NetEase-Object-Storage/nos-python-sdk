@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+import time
 
 from .connection import Urllib3HttpConnection
 from .serializer import JSONSerializer
@@ -13,6 +14,10 @@ __all__ = ["Transport"]
 
 
 class Transport(object):
+
+    #: Maximum backoff time.
+    BACKOFF_MAX = 120
+
     """
     Encapsulation of transport-related to logic. Handles instantiation of the
     individual connections as well as creating a connection pool to hold them.
@@ -22,7 +27,7 @@ class Transport(object):
     def __init__(self, access_key_id=None, access_key_secret=None,
                  connection_class=Urllib3HttpConnection,
                  serializer=JSONSerializer(), end_point='nos-eastchina1.126.net',
-                 max_retries=2, retry_on_status=(500, 501, 503, ),
+                 max_retries=2, retry_backoff_factor=0.0, retry_on_status=(500, 501, 503, ),
                  retry_on_timeout=False, timeout=None, enable_ssl=False,
                  **kwargs):
         self.access_key_id = access_key_id
@@ -30,6 +35,7 @@ class Transport(object):
         self.max_retries = max_retries
         self.retry_on_timeout = retry_on_timeout
         self.retry_on_status = retry_on_status
+        self.retry_backoff_factor = retry_backoff_factor
         self.timeout = timeout
         self.end_point = end_point
         self.enable_ssl = enable_ssl
@@ -113,6 +119,10 @@ class Transport(object):
                     # raise exception on last retry
                     if attempt >= self.max_retries:
                         raise
+                    else:
+                        backoff_value = self.retry_backoff_factor * (2 ** attempt)
+                        time.sleep(min(self.BACKOFF_MAX, backoff_value))
+                        continue
                 else:
                     raise
 
